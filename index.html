@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hello Kitty Collector Ultra v13.0</title>
+    <title>Hello Kitty Collector Classic v13.4</title>
     
     <meta name="theme-color" content="#e60012">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -117,7 +117,7 @@
         .recent-tag { background: var(--accent-light); color: #005cb2; padding: 2px 6px; border-radius: 6px; font-weight: bold; white-space: nowrap; }
         [data-theme="dark"] .recent-tag { background: #1e293b; color: var(--accent); }
         
-        /* Botón deshacer flotante e inteligente */
+        /* Botón flotante de deshacer */
         .btn-undo-floating { position: fixed; bottom: 85px; right: 15px; background: #e60012; color: white; border: 2px solid white; font-weight: 900; font-size: 12px; padding: 10px 18px; border-radius: 25px; cursor: pointer; box-shadow: 0 6px 16px rgba(230,0,18,0.25); z-index: 9999; display: flex; align-items: center; gap: 6px; transition: var(--transition); opacity: 0.3; pointer-events: none; }
         .btn-undo-floating.active { opacity: 1; pointer-events: auto; }
         .btn-undo-floating:active { transform: scale(0.92); }
@@ -147,23 +147,32 @@
         .card.rep-level-4 { background-color: var(--card-rep-4) !important; border-color: var(--card-rep-4-border) !important; }
         .card.rep-level-max { background-color: var(--card-rep-maximum) !important; border-color: var(--card-rep-maximum-border) !important; }
 
-        /* 🚨 CONTENEDOR DE LA IMAGEN REAL DE LA TARJETA */
-        .card-image-content {
-            width: 100%; height: calc(100% - 24px); object-fit: contain; border-radius: 10px;
-            filter: grayscale(100%); opacity: 0.3; transition: var(--transition);
-            background: #f1f5f9; /* Color gris base por si la foto aún no se ha subido */
+        /* Contenedor seguro para tu foto local */
+        .card-image-slot {
+            width: 100%; height: calc(100% - 32px); position: relative;
+            background: #f1f5f9; border-radius: 10px; overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
         }
-        /* Cuando consigues la tarjeta, la foto se ilumina por completo */
+        [data-theme="dark"] .card-image-slot { background: #1e293b; }
+
+        .card-image-content {
+            width: 100%; height: 100%; object-fit: contain;
+            filter: grayscale(100%); opacity: 0.3; transition: var(--transition);
+            z-index: 2; position: absolute; top: 0; left: 0;
+        }
         .card.obtained .card-image-content,
         .card[class*="rep-level-"] .card-image-content {
             filter: grayscale(0%); opacity: 1;
-            background: transparent;
         }
 
-        .card-collection-title { font-size: 7px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 1px; display: none; /* Se oculta para dar prioridad total a la foto de la estampa */ }
+        .card-placeholder-text { font-size: 26px; font-weight: 900; color: #cbd5e1; z-index: 1; }
+        [data-theme="dark"] .card-placeholder-text { color: #334155; }
         
-        .card-num-row { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0 4px; margin-top: auto; }
-        .card-num { font-size: 14px; font-weight: 900; color: var(--text-color); }
+        /* 🚨 REGRESÓ EL NOMBRE DE LA COLECCIÓN ABAJO */
+        .card-collection-title { font-size: 7.5px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 2px; }
+        
+        .card-num-row { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0 2px; margin-top: 2px; }
+        .card-num { font-size: 13px; font-weight: 900; color: var(--text-color); }
         
         .card.obtained .card-num { color: #22543d; }
         .card.rep-level-1 .card-num { color: #7b341e; }
@@ -171,9 +180,8 @@
         .card.rep-level-3 .card-num { color: #5c0f0f; }
         .card.rep-level-4 .card-num { color: #4c1d95; }
         .card.rep-level-max .card-num { color: #450a0a; }
-        [data-theme="dark"] .card.obtained .card-num, [data-theme="dark"] .card[class*="rep-level-"] .card-num { color: #ffffff; }
 
-        .card-rep-badge { background: var(--primary); color: white; font-size: 9px; min-width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 0 3px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
+        .card-rep-badge { background: var(--primary); color: white; font-size: 9px; min-width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 0 3px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.15); z-index: 5; }
 
         .view-section { display: none; }
         .view-section.active-view { display: block; }
@@ -182,7 +190,6 @@
         .trade-textarea { width: 100%; height: 120px; border: 2px solid var(--accent); background: var(--bg-color); color: var(--text-color); border-radius: 12px; padding: 10px; font-family: monospace; resize: none; outline: none; margin-bottom: 12px; }
 
         .btn-action { display: block; width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 30px; font-size: 14px; font-weight: bold; cursor: pointer; text-align: center; box-shadow: 0 4px 12px rgba(230, 0, 18, 0.15); margin-bottom: 10px; }
-        .btn-action:active { transform: scale(0.98); }
         .btn-secondary { background: var(--accent); color: white; }
         .btn-danger { background: #cc0000; }
         .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--bg-color); }
@@ -199,7 +206,7 @@
         .nav-item.active { color: var(--primary); }
         .nav-icon { font-size: 20px; margin-bottom: 2px; }
 
-        /* MODAL DE MENÚ SEGURO */
+        /* MODAL */
         .modal-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.5); z-index: 99999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s ease; padding: 20px; backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
         .modal-card { background: var(--container-bg); color: var(--text-color); width: 100%; max-width: 320px; border-radius: var(--border-radius); padding: 20px; box-shadow: 0 12px 32px rgba(0,0,0,0.3); text-align: center; border-top: 5px solid var(--primary); transform: scale(0.9); transition: transform 0.2s ease; }
@@ -223,11 +230,11 @@
     <div class="app-container">
         <header>
             <h1>Hello Kitty</h1>
-            <div class="header-meta">Álbum de Colección v13 🎀</div>
+            <div class="header-meta">Álbum Local Unificado v13.4 🎀</div>
         </header>
 
         <div class="tip-banner">
-            🖱️ <strong>Clic / Toque rápido:</strong> +1 carta | ⏱️ <strong>Clic Derecho / Mantener presionado:</strong> Opciones
+             Klik / Toque rápido: +1 carta |  Clic Derecho / Mantener presionado: Opciones
         </div>
 
         <!-- SECCIÓN: COLECCIÓN PRINCIPAL -->
@@ -370,14 +377,9 @@
         });
 
         function loadSavedData() {
-            const savedDataNew = localStorage.getItem('hk_ultra_album_v10');
-            // Purga automática si existían datos corruptos del experimento anterior
-            if (savedDataNew && (savedDataNew.includes("characterEmoji") || savedDataNew.includes("undefined"))) {
-                localStorage.removeItem('hk_ultra_album_v10');
-            }
+            localStorage.removeItem('hk_ultra_album_v10');
             generateInitialDatabase();
-            const cleanData = localStorage.getItem('hk_ultra_album_v10');
-            if (cleanData) { collectionData = JSON.parse(cleanData); } else { saveToStorage(); }
+            saveToStorage();
         }
 
         function generateInitialDatabase() {
@@ -385,7 +387,6 @@
             for (let i = 1; i <= BASE_TOTAL; i++) {
                 let foundCategory = COLLECTIONS.find(col => i >= col.start && i <= col.end);
                 let categoryName = foundCategory ? foundCategory.name : "Otros";
-                // 🚨 RUTA AUTOMÁTICA INTELIGENTE: Busca en la carpeta "cartas/" el número correspondiente
                 let calculatedImagePath = `cartas/${i}.jpg`;
                 collectionData.push({ id: i, name: i.toString(), type: categoryName, image: calculatedImagePath, obtained: false, copies: 0 });
             }
@@ -525,16 +526,21 @@
 
                 let repBadge = card.copies > 0 ? `<span class="card-rep-badge">+${card.copies}</span>` : '';
                 
-                // 🚨 RENDERIZADO INYECTADO DE LA IMAGEN INDIVIDUAL DE LA TARJETA
-                // Si la foto no existe en tu carpeta, el navegador mostrará el cuadro gris base con el número de abajo
-                let imgHtml = `<img class="card-image-content" src="${card.image}" loading="lazy" alt="Tarjeta ${card.name}">`;
+                let imgHtml = `
+                    <div class="card-image-slot">
+                        <span class="card-placeholder-text">#${card.name}</span>
+                        <img class="card-image-content" src="${card.image}" loading="lazy" alt="" onerror="this.style.display='none';">
+                    </div>
+                `;
 
+                // Inyectamos de vuelta la etiqueta card-collection-title con el tipo de colección
                 cardEl.innerHTML = `
                     ${imgHtml}
                     <div class="card-num-row">
                         <span class="card-num">#${card.name}</span>
                         ${repBadge}
                     </div>
+                    <span class="card-collection-title">${card.type}</span>
                 `;
                 grid.appendChild(cardEl);
             });
@@ -572,7 +578,7 @@
 
         function copyTradeList() { const txt = document.getElementById('trade-text'); if (collectionData.filter(c => c.copies > 0).length === 0) return; txt.select(); navigator.clipboard.writeText(txt.value); alert("¡Lista de repetidas copiada! 🎀"); }
         function copyMissingList() { const txt = document.getElementById('missing-text'); if(txt.value.includes("¡Genial!")) return; txt.select(); navigator.clipboard.writeText(txt.value); alert("¡Lista de faltantes copiada! 🔍"); }
-        function exportCollection() { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ version: "13.0", cards: collectionData })); const dl = document.createElement('a'); dl.setAttribute("href", dataStr); dl.setAttribute("download", "kitty_album_v13_backup.json"); document.body.appendChild(dl); dl.click(); dl.remove(); }
+        function exportCollection() { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ version: "13.4", cards: collectionData })); const dl = document.createElement('a'); dl.setAttribute("href", dataStr); dl.setAttribute("download", "kitty_album_v13_backup.json"); document.body.appendChild(dl); dl.click(); dl.remove(); }
         function triggerImport() { document.getElementById('file-input').click(); }
 
         function importCollection(e) {
